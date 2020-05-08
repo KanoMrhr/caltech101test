@@ -1,4 +1,5 @@
 # jpg_converterによって整理された画像をjpg_groupフォルダに分類する
+# k-means法で分類する
 # https://webbibouroku.com/Blog/Article/sklearn-cluster-flag
 
 import os
