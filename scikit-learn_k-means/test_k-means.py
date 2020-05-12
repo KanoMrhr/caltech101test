@@ -21,6 +21,7 @@ jpgs = np.array([
 ])
 jpgs = jpgs.reshape(len(jpgs), -1).astype(np.float64)
 # 次元を減らす(100, 200, 3)->(100, 600)
+## converterでは200, 100にしている…
 
 # 2. グループ分け学習
 print("learning...")
