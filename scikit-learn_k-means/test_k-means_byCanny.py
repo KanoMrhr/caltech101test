@@ -35,10 +35,10 @@ cols = ['path', 'folder', 'label']
 df = pd.DataFrame(columns=cols)
 for label, path in zip(labels, os.listdir(f'{folder}')):
     # フォルダごとに画像を分類
-    # os.makedirs(f'{to_save}/{label}', exist_ok=True)
-    # shutil.copyfile(f'{folder}/{path}',
-    #                 f'{to_save}/{label}/{path}')
-    # print([label, path])
+    os.makedirs(f'{to_save}/{label}', exist_ok=True)
+    shutil.copyfile(f'{folder}/{path}',
+                    f'{to_save}/{label}/{path}')
+    print([label, path])
 
     # 分類結果のみを出力
     record = pd.Series([path, re.sub("\d*.jpg", "", path), label.copy()], index=df.columns)
