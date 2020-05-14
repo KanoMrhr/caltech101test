@@ -19,11 +19,12 @@ for folder in os.listdir(f'{jpgDir}'):
     print("load : ", folder)
     folder = "dolphin"
     for path in os.listdir(f'{jpgDir}/{folder}'):
+
         print(f'{jpgDir}{folder}/{path}')
         img = cv2.imread(f'{jpgDir}{folder}/{path}')  # 画像の読み込み, グレスケ
         keypoints, desctriptors = akaze.detectAndCompute(img, None)
         # detectACば, keypoints, descriptorsで返り値を渡してくる
-#        print(desctriptors.shape)
+        print(desctriptors.shape)
 #        print(desctriptors.astype)
         features.extend(desctriptors.astype(np.float32))
     num_of_object += 1
