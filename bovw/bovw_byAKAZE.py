@@ -24,15 +24,21 @@ features = []
 # AKAZE特徴量を出すクラス
 akaze = cv2.AKAZE_create()
 # 直下フォルダの数：画像の種類
+minisize = 20
+count = 0
 num_of_object = len(os.listdir(f'{jpgDir}')) - len(glob.glob(f'{jpgDir}/*.*'))
 # 変換する画像の大きさ
 size = (320, 240)
 # bow分類器
-bowTrainer = cv2.BOWKMeansTrainer(num_of_object)
+if num_of_object > minisize:
+    bowTrainer = cv2.BOWKMeansTrainer(minisize)
+else:
+    bowTrainer = cv2.BOWKMeansTrainer(num_of_object)
 # Caltech101の画像を読み込んでサイズを変えて特徴量をとる
 for folder in os.listdir(f'{jpgDir}'):
     print("load : ", folder)
-    folder = "pyramid"
+    if count > minisize:
+        break
     for path in os.listdir(f'{jpgDir}/{folder}'):
         print(f'{jpgDir}{folder}/{path}')
         img = cv2.imread(f'{jpgDir}{folder}/{path}', 0)  # 画像の読み込み, グレスケ
@@ -41,11 +47,13 @@ for folder in os.listdir(f'{jpgDir}'):
             img = cv2.resize(img, (size[1], size[1] * img.shape[0] // img.shape[1]))
         else:
             img = cv2.resize(img, (size[0] * img.shape[1] // img.shape[0], size[0]))
+        print(img.size)
         keyPoints, descriptors = akaze.detectAndCompute(img, None)
-        print(descriptors.astype) #  56でエラー
+        print(descriptors.astype)  # 56でエラー
         descriptors = descriptors.astype(np.float32)
         # detectAC, keyPoints, descriptorsで返り値を渡してくる
         bowTrainer.add(descriptors)
+    count += 1
 
 # 特徴ベクトルを分類
 centroid = bowTrainer.cluster()
@@ -62,18 +70,22 @@ bowExtractor = cv2.BOWImgDescriptorExtractor(akaze, matcher)
 bowExtractor.setVocabulary(centroid)
 
 # 正しく学習できたか検証する
-for label in num_of_object:
+for label in range(num_of_object):
     os.makedirs(f'{to_save}/{label}', exist_ok=True)
 
 cols = ['path', 'folder', 'label']
 df = pd.DataFrame(columns=cols)
+count = 0
 for folder in os.listdir(f'{jpgDir}'):
     print("load : ", folder)
+    if count > minisize:
+        break
     for path in os.listdir(f'{jpgDir}{folder}'):
 #        print(f'{jpgDir}{folder}/{path}')
         img = cv2.imread(f'{jpgDir}{folder}/{path}', 0)  # 画像の読み込み, グレスケ
         # 特徴点と特徴ベクトルを計算
         keyPoints, descriptor = akaze.detectAndCompute(img, None)
+#        descriptor = descriptor.astype(np.float32)
         # Bag Of Visual Wordsの計算
         bowDescriptor = bowExtractor.compute(img, keyPoints)
 
@@ -85,6 +97,7 @@ for folder in os.listdir(f'{jpgDir}'):
         # 分類結果のみを出力
         record = pd.Series([path, re.sub("\d*.jpg", "", path), label.copy()], index=df.columns)
         df = df.append(record, ignore_index=True)  # 参照なので代入しないといけない。遅いらしい。
+    count += 1
 
 df.to_csv(to_csvName)
 
