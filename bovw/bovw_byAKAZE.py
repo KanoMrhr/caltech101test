@@ -15,18 +15,20 @@ jpgDir = "../101_ObjectCategories/"
 features = []  # 特徴量集合
 akaze = cv2.AKAZE_create()  # AKAZE特徴量を出すクラス
 num_of_object = 0
+size=(320, 240)
 for folder in os.listdir(f'{jpgDir}'):
     print("load : ", folder)
     folder = "dolphin"
     for path in os.listdir(f'{jpgDir}/{folder}'):
-
         print(f'{jpgDir}{folder}/{path}')
         img = cv2.imread(f'{jpgDir}{folder}/{path}', 0)  # 画像の読み込み, グレスケ
-        print("img_shape:", img.shape)
-        print("img_astype:", img.astype)  # TODO 27の画像だけここのimgがぬるぽになる->printしたらdescriptorまででない
-        keypoints, descriptors = akaze.detectAndCompute(img, None)
-        # detectACば, keypoints, descriptorsで返り値を渡してくる
-        print("des_shape:", descriptors.shape)  # TODO ここのdescriptorがぬるぽになる
+        # サイズのリサイズを行う。これをしないと特徴量抽出に失敗する。
+        if img.shape[0] > img.shape[1]:
+            img = cv2.resize(img, (size[1], size[1] * img.shape[0] // img.shape[1]))
+        else:
+            img = cv2.resize(img, (size[0] * img.shape[1] // img.shape[0], size[0]))
+        keyPoints, descriptors = akaze.detectAndCompute(img, None)
+        # detectACば, keyPoints, descriptorsで返り値を渡してくる
         features.extend(descriptors.astype(np.float32))
     num_of_object += 1
 
