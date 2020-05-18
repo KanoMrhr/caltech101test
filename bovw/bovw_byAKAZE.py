@@ -42,7 +42,7 @@ for folder in os.listdir(f'{jpgDir}'):
         else:
             img = cv2.resize(img, (size[0] * img.shape[1] // img.shape[0], size[0]))
         keyPoints, descriptors = akaze.detectAndCompute(img, None)
-        print(descriptors.astype)
+        print(descriptors.astype) #  56でエラー
         descriptors = descriptors.astype(np.float32)
         # detectAC, keyPoints, descriptorsで返り値を渡してくる
         bowTrainer.add(descriptors)
