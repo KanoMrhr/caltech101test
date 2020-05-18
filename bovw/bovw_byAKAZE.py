@@ -22,11 +22,12 @@ for folder in os.listdir(f'{jpgDir}'):
 
         print(f'{jpgDir}{folder}/{path}')
         img = cv2.imread(f'{jpgDir}{folder}/{path}', 0)  # 画像の読み込み, グレスケ
-        print(img.astype)  # TODO 27の画像だけここのimgがぬるぽになる
-        keypoints, desctriptors = akaze.detectAndCompute(img, None)
+        print("img_shape:", img.shape)
+        print("img_astype:", img.astype)  # TODO 27の画像だけここのimgがぬるぽになる->printしたらdescriptorまででない
+        keypoints, descriptors = akaze.detectAndCompute(img, None)
         # detectACば, keypoints, descriptorsで返り値を渡してくる
-        print(desctriptors.shape)  # TODO ここのdescriptorがぬるぽになる
-        features.extend(desctriptors.astype(np.float32))
+        print("des_shape:", descriptors.shape)  # TODO ここのdescriptorがぬるぽになる
+        features.extend(descriptors.astype(np.float32))
     num_of_object += 1
 
 print(num_of_object, " : 写真の物体の種類")
